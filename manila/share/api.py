@@ -49,8 +49,10 @@ share_api_opts = [
                      'If set to True, then scheduler will be used.'
                      'When enabling this option make sure that filter '
                      'CreateShareFromSnapshot is enabled and to have hosts '
-                     'reporting replication_domain option.'
-                )
+                     'reporting replication_domain option.'),
+    cfg.BoolOpt('enforce_type_on_create',
+                default=False,
+                help='Enforce specifying share-type on share creation')
 ]
 
 CONF = cfg.CONF
@@ -170,6 +172,10 @@ class API(base.Base):
                 size = snapshot['size']
         else:
             snapshot = None
+
+        if CONF.enforce_type_on_create and snapshot is None and not share_type:
+            msg = _("You must specify a share-type when creating a share")
+            raise exception.InvalidInput(reason=msg)
 
         def as_int(s):
             try:
