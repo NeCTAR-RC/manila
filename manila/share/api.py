@@ -70,6 +70,9 @@ share_api_opts = [
                      'quotas to be released immediately if a deletion request '
                      'is accepted. Deletions may eventually fail, and '
                      'rectifying them will require manual intervention.'),
+    cfg.BoolOpt('enforce_type_on_create',
+                default=False,
+                help='Enforce specifying share-type on share creation')
 ]
 
 CONF = cfg.CONF
@@ -300,6 +303,10 @@ class API(base.Base):
                 size = snapshot['size']
         else:
             snapshot = None
+
+        if CONF.enforce_type_on_create and snapshot is None and not share_type:
+            msg = _("You must specify a share-type when creating a share")
+            raise exception.InvalidInput(reason=msg)
 
         if not strutils.is_int_like(size) or int(size) <= 0:
             msg = (_("Share size '%s' must be an integer and greater than 0")
