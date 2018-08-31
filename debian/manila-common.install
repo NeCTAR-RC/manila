@@ -1,0 +1,12 @@
+debian/logging.conf etc/manila
+debian/manila_sudoers etc/sudoers.d
+debian/manila_tgt.conf etc/tgt/conf.d
+etc/manila/manila.conf etc/manila
+usr/bin/manila-all
+usr/bin/manila-manage
+usr/bin/manila-rootwrap
+usr/bin/manila-share
+usr/bin/manila-wsgi
+usr/etc/manila/api-paste.ini etc/manila
+usr/etc/manila/rootwrap.conf etc/manila
+usr/etc/manila/rootwrap.d etc/manila

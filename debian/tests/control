@@ -1,0 +1,4 @@
+Tests: manila-daemons, python-manila
+Depends: python-manila, manila-common, manila-api, manila-scheduler,
+ manila-data, manila-share, mysql-server, crudini
+Restrictions: needs-root allow-stderr
