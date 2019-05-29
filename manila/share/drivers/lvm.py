@@ -219,7 +219,8 @@ class LVMShareDriver(LVMMixin, driver.ShareDriver):
         """Retrieve stats info from share volume group."""
         data = {
             'share_backend_name': self.backend_name,
-            'storage_protocol': 'NFS_CIFS',
+            'storage_protocol':
+                '_'.join(CONF.enabled_share_protocols) or 'NFS_CIFS',
             'reserved_percentage':
                 self.configuration.reserved_share_percentage,
             'snapshot_support': True,
