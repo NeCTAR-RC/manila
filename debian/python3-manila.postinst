@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "configure" ] ; then
+	update-alternatives --install /usr/bin/manila-all manila-all /usr/bin/python3-manila-all 200
+	update-alternatives --install /usr/bin/manila-api manila-api /usr/bin/python3-manila-api 200
+	update-alternatives --install /usr/bin/manila-data manila-data /usr/bin/python3-manila-data 200
+	update-alternatives --install /usr/bin/manila-manage manila-manage /usr/bin/python3-manila-manage 200
+	update-alternatives --install /usr/bin/manila-rootwrap manila-rootwrap /usr/bin/python3-manila-rootwrap 200
+	update-alternatives --install /usr/bin/manila-scheduler manila-scheduler /usr/bin/python3-manila-scheduler 200
+	update-alternatives --install /usr/bin/manila-share manila-share /usr/bin/python3-manila-share 200
+	update-alternatives --install /usr/bin/manila-wsgi manila-wsgi /usr/bin/python3-manila-wsgi 200
+fi
+
+#DEBHELPER#
+
+exit 0

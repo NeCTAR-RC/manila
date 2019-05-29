@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "remove" ] ; then
+	update-alternatives --remove manila-all /usr/bin/python2-manila-all
+	update-alternatives --remove manila-api /usr/bin/python2-manila-api
+	update-alternatives --remove manila-data /usr/bin/python2-manila-data
+	update-alternatives --remove manila-manage /usr/bin/python2-manila-manage
+	update-alternatives --remove manila-rootwrap /usr/bin/python2-manila-rootwrap
+	update-alternatives --remove manila-scheduler /usr/bin/python2-manila-scheduler
+	update-alternatives --remove manila-share /usr/bin/python2-manila-share
+	update-alternatives --remove manila-wsgi /usr/bin/python2-manila-wsgi
+fi
+
+#DEBHELPER#
+
+exit 0

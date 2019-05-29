@@ -1,0 +1,9 @@
+Tests: manila-daemons, manila-shebangs-py3
+Depends: python3-manila, manila-common, manila-api, manila-scheduler,
+ manila-data, manila-share, mysql-server, rabbitmq-server, crudini
+Restrictions: needs-root allow-stderr
+
+Tests: manila-daemons, manila-shebangs-py2
+Depends: manila-common, manila-api, manila-scheduler,
+ manila-data, manila-share, mysql-server, rabbitmq-server, crudini
+Restrictions: needs-root allow-stderr

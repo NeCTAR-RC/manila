@@ -1,0 +1,808 @@
+manila (1:7.0.0-0ubuntu1~cloud0) bionic-rocky; urgency=medium
+
+  * New upstream release for the Ubuntu Cloud Archive.
+
+ -- Openstack Ubuntu Testing Bot <openstack-testing-bot@ubuntu.com>  Fri, 31 Aug 2018 00:13:25 +0000
+
+manila (1:7.0.0-0ubuntu1) cosmic; urgency=medium
+
+  * New upstream release for OpenStack Rocky.
+  * Additional support for Python 3:
+    - d/control: Drop python(3)-manila conflicts on each other.
+    - d/python(3)-manila.postinst: Ensure alternatives priority is 300
+      for Py2 and 200 for Py3.
+    - d/tests/control: Run Py3 tests first due to alternatives priority.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Thu, 30 Aug 2018 15:20:34 -0400
+
+manila (1:7.0.0~rc1-0ubuntu1) cosmic; urgency=medium
+
+  * New upstream release candidate for OpenStack Rocky.
+  * d/control: Align (Build-)Depends with upstream.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Thu, 09 Aug 2018 15:03:14 -0400
+
+manila (1:7.0.0~b2-0ubuntu2) cosmic; urgency=medium
+
+  * d/tests/manila-daemons: Fix up rabbitmqctl commands.
+  * d/python(3)-manila.post*, d/python(3)-manila.prerm: Add
+    update-alternatives for manila-data.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Mon, 18 Jun 2018 11:50:18 -0400
+
+manila (1:7.0.0~b2-0ubuntu1) cosmic; urgency=medium
+
+  * d/control: Update Standards-Version to 4.1.4.
+  * d/tests/manila-shebangs-py*: Fix typos.
+  * d/watch: Scope to 7.x series.
+  * New upstream milestone for OpenStack Rocky.
+  * d/control: Align (Build-)Depends with upstream.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Thu, 14 Jun 2018 12:04:49 -0400
+
+manila (1:6.0.0-2ubuntu1) cosmic; urgency=low
+
+  * Merge from Debian unstable.  Remaining changes:
+    - d/control, d/rules: Add Python 2.7 support and python-manila package.
+    - d/control: Support Python 2.7 first and Python 3.x as alternative.
+      manila-common depends on python-manila by default and python3-manila
+      as alternative.
+    - d/control: Drop ${python3:Depends} from manila-* binary packages
+      as it's covered in python3-manila.
+    - d/control: move python(3)-openstackclient dependency from manila-api
+      Depends to python(3)-manila Depends.
+    - d/control: Enable autopkgtest-pkg-python testsuite.
+    - d/control: Add manila-data binary package.
+    - d/rules: Add Python 2.7 support.
+    - d/rules: Install to package build directories rather than debian/tmp.
+    - d/rules: Use pkgos-dh_auto_install instead of python setup.py install.
+      This helps name binaries for update-alternatives.
+    - d/manila-common.install: Drop usr/bin/* as pkgos-dh_auto_install handles
+      install of those files.
+    - d/python(3)-manila.post*, d/python(3)-manila.prerm: update-alternatives
+      is used to enable correct shebangs for Python binaries.
+    - d/install, d/python3-manila.install: Dropped. Not needed.
+    - d/tests/*: Add Python 2/3 autopkgtests for manila daemons and shebangs.
+    - d/watch: Get tarball from tarballs.openstack.org.
+    - d/gbp.conf: Retain for gbp and pristine-tar config.
+    - d/manila-data.init.in: Add manila-data init template.
+    - d/manila-share.init.in: Fix typo.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Wed, 06 Jun 2018 08:24:38 -0400
+
+manila (1:6.0.0-2) unstable; urgency=medium
+
+  * Fixed dbc postrm.
+
+ -- Thomas Goirand <zigo@debian.org>  Mon, 26 Mar 2018 16:49:49 +0000
+
+manila (1:6.0.0-1) unstable; urgency=medium
+
+  * Switched to openstack-pkg-tools >= 70~ shared debconf templates.
+  * New upstream release.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 07 Mar 2018 08:50:52 +0000
+
+manila (1:6.0.0-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release for OpenStack Queens.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Wed, 28 Feb 2018 14:58:58 -0500
+
+manila (1:6.0.0~rc3-1) unstable; urgency=medium
+
+  * New upstream RC release.
+  * Uploading to unstable.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 27 Feb 2018 16:20:45 +0000
+
+manila (1:6.0.0~rc3-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release candidate for OpenStack Queens.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Mon, 26 Feb 2018 17:49:23 -0500
+
+manila (1:6.0.0~rc2-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release candidate for OpenStack Queens.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Wed, 21 Feb 2018 14:33:51 -0500
+
+manila (1:6.0.0~rc1-1) experimental; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/control: Set Vcs-* to salsa.debian.org
+
+  [ Thomas Goirand ]
+  * New upstream release.
+  * Fixed (build-)depends for this release.
+  * Standards-Version is now 4.1.3.
+  * Using pkgos-dh_auto_test.
+  * Switched to Python 3.
+  * Blacklist all share.drivers.dell_emc tests: they are failing in Py3.
+  * Generate policy.yaml with oslopolicy-sample-generator.
+
+ -- Thomas Goirand <zigo@debian.org>  Sun, 25 Feb 2018 13:09:06 +0000
+
+manila (1:6.0.0~rc1-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release candidate for OpenStack Queens.
+  * d/control: Align (Build-)Depends with upstream.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Wed, 14 Feb 2018 12:09:43 -0500
+
+manila (1:6.0.0~b3-0ubuntu1) bionic; urgency=medium
+
+  [ James Page ]
+  * d/manila-common.install: Drop install of policy.json.
+
+  [ Corey Bryant ]
+  * New upstream milestone for OpenStack Queens.
+  * d/*: wrap-and-sort -bast.
+  * d/control: Align (Build-)Depends with upstream.
+  * d/p/update-tests-for-ipaddress-1.0.17.patch: Dropped. Fixed in
+    milestone.
+  * d/rules: Run tests with ostestr.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Fri, 26 Jan 2018 10:26:42 -0500
+
+manila (1:6.0.0~b2-0ubuntu1) bionic; urgency=medium
+
+  * New upstream milestone for OpenStack Queens.
+  * d/control: Align (Build-)Depends with upstream.
+  * d/*: wrap-and-sort -bast.
+  * d/control: Update Standards-Version to 4.1.2.
+  * d/control: Bump debhelper compat to 10 and drop dh-systemd.
+  * d/watch: Scope to Queens series.
+  * d/p/drop-openstackdoctheme.patch: Dropped. No longer needed.
+  * d/install, d/manila-common.install, d/python-manila.install: Align
+    with upstream install paths.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Mon, 11 Dec 2017 14:07:41 -0500
+
+manila (1:5.0.1-3) unstable; urgency=medium
+
+  * Add explicit depends on e2fsprogs (Closes: #887193).
+
+ -- Thomas Goirand <zigo@debian.org>  Fri, 26 Jan 2018 11:03:41 +0100
+
+manila (1:5.0.1-2) unstable; urgency=medium
+
+  * Do not delete search.html, making build reproducible (Closes: #861896).
+  * Remove /usr/lib from manila-api (Closes: #880374).
+  * Updated pt.po (Closes: #876175).
+  * Uploading to unstable:
+    - Fixed FTBFS (Closes: #871337).
+  * Removed dh-systemd build-depends.
+  * Standards-Version is now 4.1.1.
+
+ -- Thomas Goirand <zigo@debian.org>  Sat, 28 Oct 2017 09:34:59 +0000
+
+manila (1:5.0.1-1) experimental; urgency=medium
+
+  [ Daniel Baumann ]
+  * Updating vcs fields.
+  * Updating copyright format url.
+  * Updating maintainer field.
+  * Running wrap-and-sort -bast.
+  * Updating standards version to 4.0.0.
+  * Removing gbp.conf, not used anymore or should be specified in the
+    developers dotfiles.
+  * Correcting permissions in debian packaging files.
+  * Updating standards version to 4.0.1.
+  * Deprecating priority extra as per policy 4.0.1.
+  * Updating standards version to 4.1.0.
+
+  [ Thomas Goirand ]
+  * New upstream release.
+  * Fixed (build-)depends for this release.
+  * Some clean-ups.
+  * Drop SQLAlchemy version patch.
+  * Black list cmd.test_manage.ManilaCmdManageTestCase.test_run_ipython which
+    is failing.
+  * Add python-manila.install.
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 12 Oct 2017 00:18:39 +0200
+
+manila (1:5.0.0-0ubuntu1) artful; urgency=medium
+
+  * New upstream release for OpenStack Pike.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Wed, 30 Aug 2017 09:30:03 -0400
+
+manila (1:5.0.0~rc1-0ubuntu2) artful; urgency=medium
+
+  * d/manila-common.postinst: Drop db sync (LP: #1713059).
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Tue, 29 Aug 2017 11:18:30 -0400
+
+manila (1:5.0.0~rc1-0ubuntu1) artful; urgency=medium
+
+  * New upstream release candidate for OpenStack Pike.
+  * d/control: Align (Build-)Depends with upstream.
+  * d/p/drop-openstackdoctheme.patch: Temporarily drop openstackdocstheme
+    sphinx extension until sphinx>=1.6.2 is available.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Wed, 16 Aug 2017 21:00:51 -0400
+
+manila (1:5.0.0~b3-0ubuntu2) artful; urgency=medium
+
+  * d/control: Set min python-requests to 2.14.2.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Thu, 03 Aug 2017 16:18:42 -0400
+
+manila (1:5.0.0~b3-0ubuntu1) artful; urgency=medium
+
+  * New upstream milestone for OpenStack Pike.
+  * d/control: Align (Build-)Depends with upstream.
+  * d/p/update-tests-for-ipaddress-1.0.17.patch: Skip test_update_access
+    as the CIDR in the expected vs actual call to _ssh_exec do not match.
+    Bug opened upstream as possibly a deeper issue here with use of
+    ipaddress python library in base manila code.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Fri, 28 Jul 2017 16:26:30 -0400
+
+manila (1:5.0.0~b2-0ubuntu2) artful; urgency=medium
+
+  * d/tests/control,manila-daemons: Tidy test script and use of MySQL,
+    skip test of manila-share as this requires a full OpenStack cloud
+    to actually run.
+
+ -- James Page <james.page@ubuntu.com>  Fri, 16 Jun 2017 10:54:52 +0100
+
+manila (1:5.0.0~b2-0ubuntu1) artful; urgency=medium
+
+  * d/manila-common.install: Install manila-wsgi binary.
+  * New upstream milestone for OpenStack Pike.
+  * d/control: Align (Build-)Depends with upstream.
+  * d/control: Bumped Standards-Version to 3.9.8, no changes.
+
+ -- James Page <james.page@ubuntu.com>  Tue, 13 Jun 2017 13:09:00 +0100
+
+manila (1:5.0.0~b1-0ubuntu2) artful; urgency=medium
+
+  * No-change rebuild for sqlalchemy 1.1.x.
+
+ -- James Page <james.page@ubuntu.com>  Fri, 28 Apr 2017 10:06:46 +0100
+
+manila (1:5.0.0~b1-0ubuntu1) artful; urgency=medium
+
+  * New upstream milestone for OpenStack Pike.
+  * Align (Build-)Depends with upstream milestone.
+
+ -- James Page <james.page@ubuntu.com>  Wed, 26 Apr 2017 14:48:19 +0100
+
+manila (1:4.0.0-0ubuntu3) zesty; urgency=medium
+
+  * d/control: Fix typo. 
+
+ -- Chuck Short <zulcss@ubuntu.com>  Wed, 22 Feb 2017 16:20:20 -0500
+
+manila (1:4.0.0-0ubuntu2) zesty; urgency=medium
+
+  * d/control: Add missing dependency. 
+
+ -- Chuck Short <zulcss@ubuntu.com>  Wed, 22 Feb 2017 14:46:57 -0500
+
+manila (1:4.0.0-0ubuntu1) zesty; urgency=medium
+
+  * New upstream release for Openstack Ocata. 
+
+ -- Chuck Short <zulcss@ubuntu.com>  Wed, 22 Feb 2017 10:09:10 -0500
+
+manila (1:4.0.0~rc2-0ubuntu1) zesty; urgency=medium
+
+  * d/control: Cleanup dependencies.
+  * d/control, d/tests: Add dep8 tests. 
+  * New upstream milestone release for Ocata.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 17 Feb 2017 08:49:27 -0500
+
+manila (1:4.0.0~rc1-0ubuntu1) zesty; urgency=medium
+
+  * d/control: Add python-tooz. 
+  * New upstream milestone for Ocata. 
+
+ -- Chuck Short <zulcss@ubuntu.com>  Wed, 08 Feb 2017 08:06:00 -0500
+
+manila (1:4.0.0~b2-0ubuntu1) zesty; urgency=medium
+
+  * New upstream milestone for OpenStack Ocata.
+  * d/control: Align (Build-)Depends with upstream.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Fri, 16 Dec 2016 14:37:02 -0500
+
+manila (1:4.0.0~b1-0ubuntu1) zesty; urgency=medium
+
+  * New upstream milestone for OpenStack Ocata.
+  * d/control: Align (build-)depends with upstream.
+
+ -- David Della Vecchia <ddv@canonical.com>  Mon, 21 Nov 2016 09:04:04 -0500
+
+manila (1:3.0.0-5) unstable; urgency=medium
+
+  * German debconf translation update (Closes: #842485).
+
+ -- Thomas Goirand <zigo@debian.org>  Mon, 03 Apr 2017 18:15:18 +0200
+
+manila (1:3.0.0-4) unstable; urgency=medium
+
+  * Team upload.
+  * Revert net-tools dependency.
+  * Bump build dependency on openstack-pkg-tools (Closes: #858704).
+
+ -- David Rabel <david.rabel@noresoft.com>  Sat, 01 Apr 2017 11:51:11 +0200
+
+manila (1:3.0.0-3) unstable; urgency=medium
+
+  * Team upload.
+  * Add missing dependency (Closes: #858704).
+
+ -- David Rabel <david.rabel@noresoft.com>  Sat, 25 Mar 2017 12:46:57 +0100
+
+manila (1:3.0.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Bumped debhelper compat version to 10
+  * Added lsb-base to depends
+  * Patch-out upper constraints of SQLAlchemy
+
+ -- Ondřej Nový <onovy@debian.org>  Fri, 20 Jan 2017 11:36:39 +0100
+
+manila (1:3.0.0-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 06 Oct 2016 17:53:26 +0200
+
+manila (1:3.0.0-0ubuntu1) yakkety; urgency=medium
+
+  [ Corey Bryant ]
+  * d/control: oslo.log min version level in global-requirements is too low,
+    so set min version to upper-constraints level (LP: #1628883).
+
+  [ Chuck Short ]
+  * New upstream release for Openstack Newton. 
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Thu, 29 Sep 2016 08:38:23 -0400
+
+manila (1:3.0.0~rc1-2) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/s/options: extend-diff-ignore of .gitreview
+  * d/control: Use correct branch in Vcs-* fields
+
+  [ Thomas Goirand ]
+  * Uploading to unstable.
+  * Build-Depends on openstack-pkg-tools >= 53~.
+  * Fixed olsotest EPOCH.
+  * Fixed oslo-config-generator namespaces.
+  * Debconf translation:
+    - it (Closes: #838512).
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 28 Sep 2016 09:56:39 +0200
+
+manila (1:3.0.0~rc1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Fixed (build-)depends for this release.
+  * Using OpenStack's Gerrit as VCS URLs.
+  * Removed skipped-tests.patch.
+
+ -- Thomas Goirand <zigo@debian.org>  Sat, 17 Sep 2016 19:47:24 +0200
+
+manila (1:3.0.0~rc1-0ubuntu1) yakkety; urgency=medium
+
+  * New upstream release candidate for OpenStack Newton.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Fri, 16 Sep 2016 09:21:57 -0400
+
+manila (1:3.0.0~b3-0ubuntu1) yakkety; urgency=medium
+
+  [ Corey Bryant ]
+  * New upstream version.
+  * d/control: Add python-pep8 to BDs.
+
+  [ James Page ]
+  * New upstream release.
+  * Align (Build-)Depends with upstream.
+
+ -- James Page <james.page@ubuntu.com>  Fri, 02 Sep 2016 11:05:41 +0100
+
+manila (1:3.0.0~b2-2) experimental; urgency=medium
+
+  * Added python-pep8 to build depends (Closes: #834839)
+
+ -- Ondřej Nový <onovy@debian.org>  Fri, 19 Aug 2016 23:40:21 +0200
+
+manila (1:3.0.0~b2-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Fixed (build-)depends for this release.
+  * Updated Danish translation of the debconf templates (Closes: #830648).
+  * Build-Conflicts: with bpython.
+
+ -- Thomas Goirand <zigo@debian.org>  Fri, 15 Jul 2016 21:56:18 +0200
+
+manila (1:3.0.0~b2-0ubuntu1) yakkety; urgency=medium
+
+  * New upstream milestone for OpenStack Newton.
+  * d/control: Align (build-)Depends with upstream.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Fri, 15 Jul 2016 07:52:37 -0400
+
+manila (1:3.0.0~b1-1) experimental; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/copyright: Changed source URL to new one
+
+  [ Thomas Goirand ]
+  * New upstream release.
+  * Fixed (build-)depends for this release.
+  * Removed fix-tempest.conf-generation.patch applied upstream.
+  * rm -f search.html in generated docs to avoid FTBFS with the error
+    message: "doesn't look like a Sphinx search page".
+
+ -- Thomas Goirand <zigo@debian.org>  Sun, 12 Jun 2016 18:10:45 +0200
+
+manila (1:3.0.0~b1-0ubuntu1) yakkety; urgency=medium
+
+  [ James Page ]
+  * New upstream version.
+  * d/p/*: Dropped, no longer required.
+
+  [ David Della Vecchia ]
+  * New upstream milestone for OpenStack Newton.
+  * d/control: Align (build-)Depends with upstream.
+
+ -- David Della Vecchia <ddv@canonical.com>  Mon, 06 Jun 2016 11:09:58 -0400
+
+manila (1:2.0.0-4) unstable; urgency=medium
+
+  * Fix the tempest.conf generation patch.
+  * Updated Brazilian Portuguese debconf templates (Closes: #820252).
+  * Updated Dutch debconf templates (Closes: #823255).
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 28 Apr 2016 03:18:57 +0000
+
+manila (1:2.0.0-3) unstable; urgency=medium
+
+  * Japanese debconf templates translation update (Closes: #820766).
+  * Fix tempest.conf generation.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 13 Apr 2016 22:07:00 +0000
+
+manila (1:2.0.0-2) unstable; urgency=medium
+
+  [ Ondřej Nový ]
+  * Standards-Version is 3.9.8 now (no change).
+
+  [ Thomas Goirand ]
+  * Do not use manila/keystone_auth_token, but the admin credentials instead.
+  * Build-depends on openstack-pkg-tools >= 42 to ensure default shell is
+    /bin/false by default.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 13 Apr 2016 20:38:31 +0000
+
+manila (1:2.0.0-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 07 Apr 2016 21:39:59 +0200
+
+manila (1:2.0.0-0ubuntu1) xenial; urgency=medium
+
+  [ David Della Vecchia ]
+  * d/control,manila-share.init.in: Add missing manila-share binary package
+    and associated init configuration (LP: #1546116).
+
+  [ James Page ]
+  * Final upstream release for OpenStack Mitaka.
+
+ -- David Della Vecchia <ddv@canonical.com>  Thu, 07 Apr 2016 15:53:26 +0100
+
+manila (1:2.0.0~rc1-5) unstable; urgency=medium
+
+  * Uploading to unstable.
+  * Updated ja.po debconf translation (Closes: #819133).
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 05 Apr 2016 11:00:15 +0200
+
+manila (1:2.0.0~rc1-4) experimental; urgency=medium
+
+  * Wrong template names nova->manila.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 29 Mar 2016 14:05:16 +0000
+
+manila (1:2.0.0~rc1-3) experimental; urgency=medium
+
+  * Do not use Keystone admin auth token to register API endpoints.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 29 Mar 2016 13:41:24 +0000
+
+manila (1:2.0.0~rc1-2) experimental; urgency=medium
+
+  * Adds install-missing-files.patch as PBR is (as always) missing the Alembic
+    files.
+
+ -- Thomas Goirand <zigo@debian.org>  Fri, 25 Mar 2016 11:47:17 +0100
+
+manila (1:2.0.0~rc1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Fixed (build-)depends for this release.
+  * Removed pylxd import patch.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 22 Mar 2016 14:07:15 +0100
+
+manila (1:2.0.0~rc1-0ubuntu1) xenial; urgency=medium
+
+  * New upstream release candidate for OpenStack Mitaka.
+  * d/control: Align (Build-)Depends with upstream.
+  * d/p/fix-pylxd-import.patch: Dropped. No longer needed.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Thu, 24 Mar 2016 09:06:28 -0400
+
+manila (1:2.0.0~b3-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Fixed (build-)depends for this release.
+  * Added fix-lxd-exceptions-import.patch.
+  * Standards-Version: 3.9.7 (no change).
+  * Build-Conflicts: ipython.
+
+ -- Thomas Goirand <zigo@debian.org>  Mon, 07 Mar 2016 22:45:43 +0800
+
+manila (1:2.0.0~b3-0ubuntu1) xenial; urgency=medium
+
+  * New upstream milestone for OpenStack Mitaka.
+  * d/control: Align (Build-)Depends with upstream.
+  * d/p/doc-conf-git.patch: Rebased.
+  * d/p/fix-pylxd-import.patch: Fix import of pylxd.exceptions.
+  * d/control, d/manila-data.*: Add init/install files for new data service.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Tue, 08 Mar 2016 16:37:36 -0500
+
+manila (1:2.0.0~b2-2) experimental; urgency=medium
+
+  * Build-depends on git to fix sphinx-build.
+  * Updated fr.po and nl.po debconf translation (Closes: #807765, #812352).
+  * Using $(CURDIR)/debian/tmp for generating config files.
+  * Better config file generation.
+  * Removed volume_group from manila-common.templates.
+  * VCS urls using https.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 03 Feb 2016 16:39:33 +0800
+
+manila (1:2.0.0~b2-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Fixed (build-)depends for this release.
+  * Fixed debian/copyright ordering.
+  * Fixed config file generation namespace list.
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 10 Dec 2015 10:58:35 +0100
+
+manila (1:2.0.0~b2-0ubuntu1) xenial; urgency=medium
+
+  * New upstream milestone for OpenStack Mitaka.
+  * d/control: Align (build-)depends with upstream.
+  * d/p/doc-conf-git.patch: Drop git commands that fail sphinx-build.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Fri, 22 Jan 2016 17:49:28 -0500
+
+manila (1:2.0.0~b1-0ubuntu1) xenial; urgency=medium
+
+  * New upstream milestone for OpenStack Mitaka.
+  * d/control: Align (build-)depends with upstream.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Thu, 17 Dec 2015 10:43:29 -0500
+
+manila (1:1.0.0-6) unstable; urgency=medium
+
+  * Import .po files from Glance (Closes: #804948).
+
+ -- Thomas Goirand <zigo@debian.org>  Fri, 13 Nov 2015 09:53:16 +0100
+
+manila (1:1.0.0-5) unstable; urgency=medium
+
+  * Correctly purge the package (Closes: #803444).
+  * Configures keystone_authtoken, rabbit, db and API endpoint using debconf.
+  * Fixes missing alembic.ini.
+  * Fixed default manila.conf generation (it was wrong, missing some options,
+    and wrong defaults like lock_path and auth_protocol).
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 10 Nov 2015 15:19:53 +0100
+
+manila (1:1.0.0-4) unstable; urgency=medium
+
+  * Added q-text-as-data in depends of manila-api.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 03 Nov 2015 11:47:31 +0000
+
+manila (1:1.0.0-3) unstable; urgency=medium
+
+  * Rebuilt with openstack-pkg-tools 37 to use Keystone API v3.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 03 Nov 2015 08:34:45 +0000
+
+manila (1:1.0.0-2) unstable; urgency=medium
+
+  * Added -p flag when doing mkdir /var/lib/manila/volumes (Closes: #802319).
+
+ -- Thomas Goirand <zigo@debian.org>  Thu, 22 Oct 2015 18:08:15 +0200
+
+manila (1:1.0.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Uploading to unstable.
+  * Align the EPOCH with the Ubuntu version.
+  * Added python-pymysql as runtime dependency.
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 13 Oct 2015 15:03:45 +0200
+
+manila (1:1.0.0-0ubuntu1) wily; urgency=medium
+
+  * New upstream release for OpenStack Liberty.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Thu, 15 Oct 2015 16:35:11 -0400
+
+manila (1:1.0.0~rc3-0ubuntu1) wily; urgency=medium
+
+  * New upstream release candidate for OpenStack Liberty.
+  * d/control: Align dependencies with upstream.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Wed, 14 Oct 2015 10:35:30 -0400
+
+manila (1:1.0.0~rc2-0ubuntu1) wily; urgency=medium
+
+  * New upstream release candidate for OpenStack Liberty.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Tue, 06 Oct 2015 11:38:41 -0400
+
+manila (1:1.0.0~rc1-0ubuntu2) wily; urgency=medium
+
+  * d/control: Set minimum pbr version at 1.8.
+
+ -- James Page <james.page@ubuntu.com>  Mon, 28 Sep 2015 10:19:23 +0100
+
+manila (1:1.0.0~rc1-0ubuntu1) wily; urgency=medium
+
+  [ Corey Bryant ]
+  * New upstream release candidate for OpenStack Liberty.
+  * d/control: Align (build-)depends with upstream.
+
+  [ James Page ]
+  * d/watch: Update to cope with upstream rc naming.
+
+ -- James Page <james.page@ubuntu.com>  Thu, 24 Sep 2015 08:46:24 +0100
+
+manila (1:1.0.0~b3-0ubuntu1) wily; urgency=medium
+
+  * New upstream milestone for OpenStack Liberty.
+  * d/control: Align (build-)depends with upstream.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Tue, 08 Sep 2015 15:58:54 -0400
+
+manila (1:1.0.0~b2-0ubuntu1) wily; urgency=medium
+
+  * New upstream milestone for OpenStack Liberty.
+  * d/control: Align (build-)depends with upstream.
+  * d/rules: Remove .eggs directory in override_dh_auto_clean.
+
+ -- Corey Bryant <corey.bryant@canonical.com>  Wed, 19 Aug 2015 11:53:10 -0400
+
+manila (1:1.0.0~b1-0ubuntu2) wily; urgency=medium
+
+  * No change rebuild with SQLAlchemy 1.0.6.
+
+ -- James Page <james.page@ubuntu.com>  Fri, 24 Jul 2015 09:27:33 +0100
+
+manila (1:1.0.0~b1-0ubuntu1) wily; urgency=medium
+
+  * New upstream milestone for OpenStack Liberty.
+  * Align (build-)depends with upstream.
+  * Drop all patches, no longer required.
+
+ -- James Page <james.page@ubuntu.com>  Mon, 29 Jun 2015 17:03:19 +0100
+
+manila (2015.1.0-0ubuntu1) vivid; urgency=medium
+
+  * New upstream release for OpenStack kilo. (LP: #1449744) 
+
+ -- Chuck Short <zulcss@ubuntu.com>  Fri, 01 May 2015 08:38:15 +0200
+
+manila (2015.1~rc1-0ubuntu1) vivid; urgency=medium
+
+  * New upstream milestone release for OpenStack Kilo:
+    - d/control: Align dependencies and versions with upstream.
+    - debian/patches/pep-0476.patch: Dropped no longer needed.
+    - debian/patches/skipped-tests.patch: Skipped failing test.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Thu, 16 Apr 2015 09:57:38 -0400
+
+manila (2015.1~b3-0ubuntu2) vivid; urgency=medium
+
+  * New upstream milestone release for OpenStack Kilo:
+    - d/control: Align dependencies and versions with upstream.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Thu, 16 Apr 2015 09:30:26 -0400
+
+manila (2015.1~b3-0ubuntu1) vivid; urgency=medium
+
+  * New upstream milestone release for OpenStack Kilo:
+    - d/control: Align dependencies and versions with upstream.
+    - d/p/fixup-test-failure.patch: Align expected string with unicode
+      encoded result.
+
+ -- James Page <james.page@ubuntu.com>  Mon, 30 Mar 2015 11:16:44 +0100
+
+manila (2015.1~b2-0ubuntu1) vivid; urgency=medium
+
+  * New upstream milestone release:
+    - d/control: Resync dependency versions with upstream.
+    - d/control: Version BD on ddt to >= 1.0.0, resolving test failures.
+  * d/control: Add missing BD on python-testresources.
+  * d/*: wrap-and-sort.
+
+ -- James Page <james.page@ubuntu.com>  Thu, 19 Mar 2015 14:35:23 +0000
+
+manila (2015.1~b1-0ubuntu1) vivid; urgency=medium
+
+  * New upstream release:
+    - d/control: Add new dependencies.
+    - Install any new binaries and configuration to common package.
+  * d/watch: Update to use tarballs.openstack.org.
+  * d/control,compat: Bump debhelper compat level to 9.
+  * d/control: Bumped Standards-Version to 3.9.6, no changes.
+  * Systemd enablement:
+    - d/rules,control: Enable use of dh-systemd and openstack-pkg-tools.
+    - d/*.init.in: Write templates for generation of init, service and
+      upstart configurations.
+    - d/*.upstart: Drop in preference to above.
+  * d/*.logrotate: Move to single logrotate configuration in common package.
+  * d/rules: Ensure unit test suite failure fails package build.
+  * d/p/pep-0476.patch: Deal with SSL certification chain verification unit
+    test failures.
+
+ -- James Page <james.page@ubuntu.com>  Thu, 15 Jan 2015 11:55:33 +0000
+
+manila (2014.1~git20140220-0ubuntu13) utopic; urgency=medium
+
+  * Rebuild for sqlalchemy 0.9. 
+
+ -- Chuck Short <zulcss@ubuntu.com>  Thu, 08 May 2014 14:19:44 -0500
+
+manila (2014.1~git20140220-0ubuntu12) trusty; urgency=medium
+
+  * Fix dependency typo (pyhon-oslo.config -> python-oslo.config).
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Tue, 18 Mar 2014 11:11:03 +0000
+
+manila (2014.1~git20140220-0ubuntu11) trusty; urgency=low
+
+  * Initial release.
+
+ -- Chuck Short <zulcss@ubuntu.com>  Tue, 18 Feb 2014 08:43:32 -0500
+
+manila (1.0.0~rc1-2) experimental; urgency=medium
+
+  * Do not duplicate /usr/bin/manila-scheduler in both -common and -scheduler
+    packages (Closes: #801101).
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 06 Oct 2015 14:20:36 +0000
+
+manila (1.0.0~rc1-1) experimental; urgency=medium
+
+  * New upstream release.
+  * Now manila-api depends on python-openstackclient.
+  * Fixed (build-)depends for this release.
+
+ -- Thomas Goirand <zigo@debian.org>  Mon, 21 Sep 2015 13:02:31 +0000
+
+manila (1.0.0~b3-1) experimental; urgency=medium
+
+  * Initial release (Closes: #789660).
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 09 Sep 2015 11:02:32 +0200
+

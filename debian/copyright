@@ -1,0 +1,75 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: manila
+Source: https://github.com/openstack/manila
+
+Files: *
+Copyright: (c) 2010-2017, OpenStack Foundation <openstack-dev@lists.openstack.org>
+           (c) 2001-2010, Twisted Matrix Laboratories
+           (c) 2012-2014, NetApp
+           (c) 2014-2016, Alex Meade
+           (c) 2014-2017, Mirantis inc.
+           (c) 2013-2016, Hewlett-Packard Development Company, L.P.
+           (c) 2011 Justin, Santa Barbara
+           (c) 2010, US Gov. as represented by the Administratof of NASA
+           (c) 2014-2016, Clinton Knight
+           (c) 2014-2016, EMC Corporation
+           (c) 2011, Zadara Storage Inc.
+           (c) 2012-2014, IBM Corp.
+           (c) 2013, Nebula, Inc.
+           (c) 2011-2015, Intel Corporation
+           (c) 2015-2016, Hitachi Data Systems
+           (c) 2014 Ben Swartzlander
+           (c) 2015 Tom Barron
+           (c) 2015-2017, Huawei Technologies Co., Ltd.
+           (c) 2011, University of Southern California
+           (c) 2012-2016, Red Hat, Inc.
+           (c) 2015, Cloudbase Solutions SRL
+           (c) 2012-2013, AT&T Labs, Yun Mao <yunmao@gmail.com>
+           (c) 2011-2014, X.commerce, a business unit of eBay Inc.
+           (c) 2010-2011, Citrix Systems, Inc.
+           (c) 2016, SAP SE
+           (c) 2015-2016, Goutham Pacha Ravi
+           (c) 2014-2015, Bob Callaway
+           (c) 2015 Rushil Chugh
+           (c) 2016, Tegile Systems Inc.
+           (c) 2016, MapR Technologies
+           (c) 2014, Oracle and/or its affiliates
+           (c) 2016, QNAP Systems, Inc.
+           (c) 2016, Dell Inc. or its subsidiaries.
+           (c) 2015, Quobyte, Inc.
+           (c) 2014, Navneet Singh
+           (c) 2016, Nexenta Systems, Inc.
+           (c) 2017, Veritas Technologies LLC.
+           (c) 2015, Deutsche Telekom AG
+           (c) 2018, Jose Porrua
+           (c) 2017, Infinidat Ltd.
+           (c) 2015, Mirantis, Inc.
+           (c) 2012, Cloudscaling
+           (c) 2012, Rackspace Hosting
+           (c) 2011, Piston Cloud Computing, Inc.
+           (c) 2014, SUSE Linux Products GmbH
+           (c) 2017, Fiberhome Telecommunication Technologies Co.,LTD
+           (c) 2005, the Lawrence Journal-World
+License: Apache-2
+
+Files: debian/*
+Copyright: (c) 2014, Canonical Ltd
+           (c) 2015, Malihe Asemani <ml.asemani@gmail.com>
+           (c) 2015-2018, Thomas Goirand <zigo@debian.org>
+License: Apache-2
+
+License: Apache-2
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ .
+    http://www.apache.org/licenses/LICENSE-2.0
+ .
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ .
+ On Debian-based systems the full text of the Apache version 2.0 license
+ can be found in `/usr/share/common-licenses/Apache-2.0'.
