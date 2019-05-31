@@ -27,10 +27,6 @@ override_dh_install:
 	pkgos-dh_auto_install --no-py2
 	rm -rf $(CURDIR)/debian/python3-manila/usr/etc
 
-ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
-	pkgos-dh_auto_test --no-py2 'manila\.tests\.((?!.*cmd\.test_manage\.ManilaCmdManageTestCase\.test_run_ipython.*|.*share\.drivers\.dell_emc.*))'
-endif
-
 	# Generate the config file
 	mkdir -p $(CURDIR)/debian/manila-common/usr/share/manila-common
 	PYTHONPATH=$(CURDIR)/debian/python3-manila/usr/lib/python3/dist-packages python3-oslo-config-generator \
