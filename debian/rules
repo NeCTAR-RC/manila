@@ -28,9 +28,6 @@ override_dh_install:
 	rm -rf $(CURDIR)/debian/python-manila/usr/etc
 	rm -rf $(CURDIR)/debian/python3-manila/usr/etc
 
-ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
-	pkgos-dh_auto_test 'manila\.tests\.((?!.*cmd\.test_manage\.ManilaCmdManageTestCase\.test_run_ipython.*|.*share\.drivers\.dell_emc.*))'
-endif
 
 	# Generate the config file
 	mkdir -p $(CURDIR)/debian/manila-common/usr/share/manila-common
