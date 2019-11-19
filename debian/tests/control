@@ -1,0 +1,4 @@
+Tests: manila-daemons
+Depends: manila-common, manila-api, manila-scheduler,
+ manila-data, manila-share, mysql-server, rabbitmq-server, crudini
+Restrictions: needs-root allow-stderr

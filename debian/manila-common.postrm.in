@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+#PKGOS-INCLUDE#
+
+if [ "${1}" = "purge" ] ; then
+	pkgos_dbc_postrm manila manila-common $@
+
+	rm -rf /etc/manila /var/log/manila /var/lib/manila /var/lock/manila
+fi
+
+#DEBHELPER#
+
+exit 0

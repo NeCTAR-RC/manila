@@ -1,0 +1,3 @@
+version=3
+opts="uversionmangle=s/\.([a-zA-Z])/~$1/;s/\.0b/~b/;s/\.0rc/~rc/" \
+ http://tarballs.openstack.org/manila manila-(8\.\d.*)\.tar.gz

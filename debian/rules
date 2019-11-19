@@ -1,0 +1,78 @@
+#!/usr/bin/make -f
+
+include /usr/share/openstack-pkg-tools/pkgos.make
+
+%:
+	dh $@ --buildsystem=python_distutils --with python3,systemd,sphinxdoc
+
+override_dh_auto_clean:
+	rm -f etc/manila/manila.conf
+	rm -f debian/*.service debian/*.upstart debian/*.init
+	rm -f debian/manila-common.postinst debian/manila-common.config debian/manila-api.config debian/manila-api.postinst debian/manila-common.postrm
+	rm -rf debian/manila-common.postrm debian/*.templates debian/po
+
+override_dh_auto_build:
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func manila-common.postinst
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func manila-common.config
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func manila-api.postinst
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_func manila-api.config
+	/usr/share/openstack-pkg-tools/pkgos_insert_include pkgos_postrm manila-common.postrm
+	pkgos-merge-templates manila-api manila endpoint
+	pkgos-merge-templates manila-common manila db rabbit ksat
+
+override_dh_auto_install:
+	echo "Do nothing..."
+
+override_dh_install:
+	pkgos-dh_auto_install --no-py2
+	rm -rf $(CURDIR)/debian/python3-manila/usr/etc
+
+ifeq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
+	pkgos-dh_auto_test --no-py2 'manila\.tests\.((?!.*cmd\.test_manage\.ManilaCmdManageTestCase\.test_run_ipython.*|.*share\.drivers\.dell_emc.*))'
+endif
+
+	# Generate the config file
+	mkdir -p $(CURDIR)/debian/manila-common/usr/share/manila-common
+	PYTHONPATH=$(CURDIR)/debian/python3-manila/usr/lib/python3/dist-packages python3-oslo-config-generator \
+		--namespace manila \
+		--namespace oslo.messaging \
+		--namespace oslo.middleware.cors \
+		--namespace oslo.middleware.http_proxy_to_wsgi \
+		--namespace oslo.db \
+		--namespace oslo.db.concurrency \
+		--namespace keystonemiddleware.auth_token \
+		--output-file $(CURDIR)/debian/manila-common/usr/share/manila-common/manila.conf
+	pkgos-readd-keystone-authtoken-missing-options $(CURDIR)/debian/manila-common/usr/share/manila-common/manila.conf keystone_authtoken manila
+
+	pkgos-fix-config-default $(CURDIR)/debian/manila-common/usr/share/manila-common/manila.conf keystone_authtoken auth_protocol http
+	pkgos-fix-config-default $(CURDIR)/debian/manila-common/usr/share/manila-common/manila.conf oslo_concurrency lock_path /var/lock/manila
+
+	PYTHONPATH=$(CURDIR)/debian/python3-manila/usr/lib/python3/dist-packages python3-oslopolicy-sample-generator \
+		--output-file $(CURDIR)/debian/manila-common/usr/share/manila-common/policy.json \
+		--format json \
+		--namespace manila
+
+	# and copy the remaining
+	set -e ; for i in api-paste.ini rootwrap.conf ; do \
+		cp $(CURDIR)/etc/manila/$$i $(CURDIR)/debian/manila-common/usr/share/manila-common ; \
+	done
+	cp $(CURDIR)/etc/manila/logging_sample.conf $(CURDIR)/debian/manila-common/usr/share/manila-common/logging.conf
+	cp -rfv $(CURDIR)/etc/manila/rootwrap.d $(CURDIR)/debian/manila-common/usr/share/manila-common
+
+	install -D -m 0440 debian/manila-common.sudoers $(CURDIR)/debian/manila-common/etc/sudoers.d/manila-common
+
+	dh_install
+	dh_missing --fail-missing
+	rm -rf $(CURDIR)/debian/manila-api/usr/lib
+
+override_dh_auto_test:
+	echo "Do nothing..."
+
+override_dh_sphinxdoc:
+ifeq (,$(findstring nodocs, $(DEB_BUILD_OPTIONS)))
+	sphinx-build -b html doc/source $(CURDIR)/debian/manila-doc/usr/share/doc/manila-doc/html
+	dh_sphinxdoc
+endif
+
+override_dh_python3:
+	dh_python3 --shebang=/usr/bin/python3
