@@ -191,7 +191,7 @@ class ShareReplicationController(wsgi.Controller, wsgi.AdminActionsMixin):
 
     @wsgi.Controller.api_version(MIN_SUPPORTED_API_VERSION, experimental=True)
     @wsgi.action('reset_status')
-    def reset_status(self, req, id, body):
+    def reset_status(self, req, id, body):  # noqa F811
         """Reset the 'status' attribute in the database."""
         return self._reset_status(req, id, body)
 
@@ -204,7 +204,7 @@ class ShareReplicationController(wsgi.Controller, wsgi.AdminActionsMixin):
     @wsgi.Controller.api_version(MIN_SUPPORTED_API_VERSION, experimental=True)
     @wsgi.action('reset_replica_state')
     @wsgi.Controller.authorize
-    def reset_replica_state(self, req, id, body):
+    def reset_replica_state(self, req, id, body):  # noqa F811
         """Reset the 'replica_state' attribute in the database."""
         return self._reset_status(req, id, body, status_attr='replica_state')
 
