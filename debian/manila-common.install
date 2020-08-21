@@ -1,0 +1,2 @@
+debian/manila_sudoers etc/sudoers.d
+debian/manila_tgt.conf etc/tgt/conf.d

@@ -1,0 +1,44 @@
+#!/bin/sh
+
+set -e
+
+CONF=/etc/manila/manila.conf
+
+#PKGOS-INCLUDE#
+
+if [ "$1" = "configure" ] || [ "$1" = "reconfigure" ] ; then
+	. /usr/share/debconf/confmodule
+	. /usr/share/dbconfig-common/dpkg/postinst
+
+	pkgos_var_user_group manila
+
+	# We need that extra folder.
+	mkdir -p /var/lib/manila/volumes
+	chown -R manila:manila /var/lib/manila/volumes
+
+	# Install config files.
+	pkgos_write_new_conf manila manila.conf
+	pkgos_write_new_conf manila api-paste.ini
+	pkgos_write_new_conf manila logging.conf
+	pkgos_write_new_conf manila policy.json
+	pkgos_write_new_conf manila rootwrap.conf
+	chown root:root /etc/manila/rootwrap.conf
+	if ! [ -e /etc/manila/rootwrap.d ] ; then
+		cp -auxf /usr/share/manila-common/rootwrap.d /etc/manila
+		chown -R root:root /etc/manila/rootwrap.d
+		chmod 0755 /etc/manila/rootwrap.d
+	fi
+
+	pkgos_rabbit_write_conf ${CONF} oslo_messaging_rabbit manila
+	pkgos_write_admin_creds ${CONF} keystone_authtoken manila
+
+	db_get manila/configure_db
+	if [ "$RET" = "true" ]; then
+		pkgos_dbc_postinst ${CONF} database connection manila $@
+		su -s /bin/sh -c 'manila-manage db sync' manila
+	fi
+fi
+
+#DEBHELPER#
+
+exit 0
