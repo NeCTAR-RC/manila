@@ -1,0 +1,3 @@
+skip-py38-failures.patch
+add-mysql8-compatibility.patch
+install-missing-files.patch

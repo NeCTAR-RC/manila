@@ -1,0 +1,85 @@
+#!/bin/sh
+
+set -e
+
+#PKGOS-INCLUDE#
+
+if [ "$1" = "configure" ] || [ "$1" = "reconfigure" ] ; then
+	. /usr/share/debconf/confmodule
+
+	# We need special handling for Manila, as it needs 2 endpoints
+	PKG_NAME=manila
+	db_get ${PKG_NAME}/configure_api-endpoint
+	if [ "${RET}" = "true" ] ; then
+		# Setup the v1 endpoint
+		db_get ${PKG_NAME}/api-keystone-address
+		KEYSTONE_ENDPOINT_IP=${RET}
+		db_get ${PKG_NAME}/api-endpoint-address
+		PKG_ENDPOINT_IP=${RET}
+		db_get ${PKG_NAME}/api-endpoint-region-name
+		REGION_NAME=${RET}
+
+		db_get ${PKG_NAME}/api-keystone-admin-project-name
+		KEYSTONE_PROJECT_NAME=${RET}
+		db_get ${PKG_NAME}/api-keystone-admin-username
+		KEYSTONE_ADMIN_NAME=${RET}
+		db_get ${PKG_NAME}/api-keystone-admin-password
+		KEYSTONE_ADMIN_PASSWORD=${RET}
+
+		if [ -n "${KEYSTONE_ENDPOINT_IP}" ] && [ -n "${PKG_ENDPOINT_IP}" ] && [ -n "${REGION_NAME}" ] && [ -n "${KEYSTONE_PROJECT_NAME}" ] && [ -n "${KEYSTONE_ADMIN_NAME}" ]  && [ -n "${KEYSTONE_ADMIN_PASSWORD}" ] ; then
+			export OS_PROJECT_DOMAIN_ID=default
+			export OS_USER_DOMAIN_ID=default
+			export OS_TENANT_NAME=${KEYSTONE_PROJECT_NAME}
+			export OS_PROJECT_NAME=${KEYSTONE_PROJECT_NAME}
+			export OS_USERNAME=${KEYSTONE_ADMIN_NAME}
+			export OS_PASSWORD=${KEYSTONE_ADMIN_PASSWORD}
+			export OS_AUTH_URL=http://${KEYSTONE_ENDPOINT_IP}:35357/v3/
+			export OS_IDENTITY_API_VERSION=3
+			export OS_AUTH_VERSION=3
+			export OS_PROJECT_DOMAIN_ID=default
+			export OS_USER_DOMAIN_ID=default
+			export OS_NO_CACHE=1
+
+		        SERVICE_NAME=manila
+		        SERVICE_TYPE=share
+			SERVICE_DESC="OpenStack Shared Filesystems"
+			SERVICE_PORT=8786
+			SERVICE_URL=/v1/'$(tenant_id)s'
+			echo "Registering service and endpoints for ${SERVICE_NAME} with type ${SERVICE_TYPE} at http://${PKG_ENDPOINT_IP}:${SERVICE_PORT}${SERVICE_URL}"
+			NUM_LINES=$(openstack service list --format=csv | q -d , -H 'SELECT ID FROM - WHERE `Type`="'${SERVICE_TYPE}'"' | wc -l)
+			if [ "${NUM_LINES}" = "0" ] ; then
+				openstack service create --name=${SERVICE_NAME} --description="${SERVICE_DESC}" ${SERVICE_TYPE}
+				openstack endpoint create --region "${REGION_NAME}" ${SERVICE_NAME} public http://${PKG_ENDPOINT_IP}:${SERVICE_PORT}${SERVICE_URL}
+				openstack endpoint create --region "${REGION_NAME}" ${SERVICE_NAME} internal http://${PKG_ENDPOINT_IP}:${SERVICE_PORT}${SERVICE_URL}
+				openstack endpoint create --region "${REGION_NAME}" ${SERVICE_NAME} admin http://${PKG_ENDPOINT_IP}:${SERVICE_PORT}${SERVICE_URL}
+			fi
+
+		        SERVICE_NAME=manilav2
+		        SERVICE_TYPE=sharev2
+			SERVICE_DESC="OpenStack Shared Filesystems v2"
+			SERVICE_PORT=8786
+			SERVICE_URL=/v2/'$(tenant_id)s'
+			echo "Registering service and endpoints for ${SERVICE_NAME} with type ${SERVICE_TYPE} at http://${PKG_ENDPOINT_IP}:${SERVICE_PORT}${SERVICE_URL}"
+			NUM_LINES=$(openstack service list --format=csv | q -d , -H 'SELECT ID FROM - WHERE `Type`="'${SERVICE_TYPE}'"' | wc -l)
+			if [ "${NUM_LINES}" = "0" ] ; then
+				openstack service create --name=${SERVICE_NAME} --description="${SERVICE_DESC}" ${SERVICE_TYPE}
+				openstack endpoint create --region "${REGION_NAME}" ${SERVICE_NAME} public   http://${PKG_ENDPOINT_IP}:${SERVICE_PORT}${SERVICE_URL}
+				openstack endpoint create --region "${REGION_NAME}" ${SERVICE_NAME} internal http://${PKG_ENDPOINT_IP}:${SERVICE_PORT}${SERVICE_URL}
+				openstack endpoint create --region "${REGION_NAME}" ${SERVICE_NAME} admin    http://${PKG_ENDPOINT_IP}:${SERVICE_PORT}${SERVICE_URL}
+			fi
+#			pkgos_register_endpoint_postinst manila manila volume "Shared FS Service" 8786 /v1/'$(tenant_id)s'
+#			pkgos_register_endpoint_postinst manila manilav2 volumev2 "Shared FS Service v2" 8786 /v2/'$(tenant_id)s'
+		else
+			echo "Problem in endpoint parameter (IPs or otherwise)."
+		fi
+		db_unregister ${PKG_NAME}/configure_api-endpoint
+	else
+		echo "Will not register "${SERVICE_NAME}" endpoint this time (no user request for it)."
+	fi
+	db_unregister ${PKG_NAME}/api-keystone-admin-password
+	db_stop
+fi
+
+#DEBHELPER#
+
+exit 0
