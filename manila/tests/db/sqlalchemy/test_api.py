@@ -4029,7 +4029,8 @@ class AvailabilityZonesDatabaseAPITestCase(test.TestCase):
             db_api._availability_zone_create_if_not_exist(self.ctxt, 'test2')
             db_api._availability_zone_create_if_not_exist(self.ctxt, 'test3')
 
-        db_api.service_create(self.ctxt, {'availability_zone': 'test2'})
+        db_api.service_create(self.ctxt, {'availability_zone': 'test2',
+                                          'binary': 'manila-share'})
 
         actual_result = db_api.availability_zone_get_all(self.ctxt)
 
