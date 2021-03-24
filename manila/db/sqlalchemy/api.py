@@ -6338,7 +6338,7 @@ def availability_zone_get_all(context):
         context, models.Service,
         models.Service.availability_zone_id,
         read_deleted="no"
-    ).filter_by(disabled=False).distinct()
+    ).filter_by(disabled=False, binary='manila-share').distinct()
 
     return model_query(
         context, models.AvailabilityZone, read_deleted="no",
