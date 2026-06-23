@@ -1,0 +1,19 @@
+---
+fixes:
+  - |
+    Fixed a bug in the LVM share driver where deleting an NFS share could fail
+    with a 'target is busy' error, sometimes recoverable only by rebooting the
+    host. When an NFSv4 client (for example a deleted instance) had mounted the
+    share but never unmounted it, the kernel NFS server retained the client's
+    open state, keeping the share filesystem busy. When deleting a share or
+    snapshot, or reverting to a snapshot, the driver now forcibly expires any
+    stale NFSv4 client state pinning the device before unmounting it.
+upgrade:
+  - |
+    The LVM share driver can now expire stale NFSv4 client state held by the
+    kernel NFS server to allow busy shares to be deleted. This requires access
+    to the kernel NFS server client list (``/proc/fs/nfsd/clients``). When
+    ``manila-share`` runs in a container, bind-mount the host's
+    ``/proc/fs/nfsd`` into the container and set the new
+    ``lvm_nfsd_clients_path`` option to its location. If the path is not
+    available the driver falls back to its previous retry-on-busy behaviour.

@@ -16,16 +16,80 @@
 Helpers for os basic commands
 """
 
+import os
+import re
+
 from oslo_concurrency import processutils
+from oslo_log import log
 
 from manila import exception
 
 import manila.privsep
 
+LOG = log.getLogger(__name__)
+
 
 @manila.privsep.sys_admin_pctxt.entrypoint
 def rmdir(dir_path):
     processutils.execute('rmdir', dir_path)
+
+
+def _expire_nfs_clients_holding_dev(major, minor, clients_path):
+    """Expire NFSv4 clients holding open state on the given device.
+
+    Walks the kernel NFS server client list (``/proc/fs/nfsd/clients``) and,
+    for every client that has open/lock state referencing the ``major:minor``
+    device, writes ``expire`` to its ``ctl`` file to forcibly release that
+    state. Returns the list of expired client ids.
+
+    Pulled out of the privsep entrypoint so it can be unit tested without
+    privsep.
+    """
+    expired = []
+    # The kernel reports the device in the 'states' file as e.g.
+    # superblock: "fd:01:1234" (major:minor:inode, all but the inode in hex).
+    # Match leniently to tolerate format differences across kernels.
+    superblock_re = re.compile(
+        r'superblock"?\s*:\s*"%02x:%02x:' % (major, minor))
+    try:
+        client_ids = os.listdir(clients_path)
+    except OSError:
+        # NFS server not running, or the clients dir is not exposed (e.g. not
+        # bind-mounted into a container). Nothing we can do; let the caller
+        # fall back to retrying the unmount.
+        return expired
+    for client_id in client_ids:
+        states_path = os.path.join(clients_path, client_id, 'states')
+        try:
+            with open(states_path) as f:
+                states = f.read()
+        except OSError:
+            continue
+        if not superblock_re.search(states):
+            continue
+        try:
+            with open(os.path.join(clients_path, client_id, 'ctl'), 'w') as f:
+                f.write('expire\n')
+            expired.append(client_id)
+        except OSError as e:
+            LOG.warning("Failed to expire NFS client %(id)s: %(err)s",
+                        {'id': client_id, 'err': e})
+    return expired
+
+
+@manila.privsep.sys_admin_pctxt.entrypoint
+def expire_nfs_clients_holding_dev(major, minor,
+                                   clients_path='/proc/fs/nfsd/clients'):
+    """Expire NFSv4 client state pinning the given device.
+
+    When an NFSv4 client (for example a now-deleted VM) mounts a share but
+    never unmounts it, the kernel NFS server retains the client's open state,
+    keeping the share filesystem busy and preventing it from being unmounted
+    (the state is held as a 'courtesy' client for up to ~24h). Forcibly
+    expire any client still referencing the share's device so the share can
+    be torn down.
+    """
+    return _expire_nfs_clients_holding_dev(major, minor, clients_path)
 
 
 @manila.privsep.sys_admin_pctxt.entrypoint

@@ -433,6 +433,7 @@ class LVMShareDriverTestCase(test.TestCase):
         self.mock_object(os_routines, 'rmdir')
         self.mock_object(privsep_common, 'execute_with_retries')
         self.mock_object(self._driver, '_deallocate_container')
+        mock_expire = self.mock_object(self._driver, '_expire_nfs_clients')
 
         self._driver.delete_snapshot(self._context, self.snapshot,
                                      self.share_server)
@@ -441,6 +442,7 @@ class LVMShareDriverTestCase(test.TestCase):
         os_routines.rmdir.assert_called_once_with(mount_path)
         self._driver._deallocate_container.assert_called_once_with(
             self.snapshot['name'])
+        mock_expire.assert_called_once_with(self.snapshot)
 
     def test_delete_share_invalid_share(self):
         self.mock_object(self._driver, '_unmount_device')
@@ -599,6 +601,7 @@ class LVMShareDriverTestCase(test.TestCase):
         self.mock_object(os_routines, 'umount', mock.Mock(
             side_effect=execute_sideeffects))
         self.mock_object(os_routines, 'rmdir')
+        mock_expire = self.mock_object(self._driver, '_expire_nfs_clients')
 
         self._driver._unmount_device(self.share,
                                      retry_busy_device=retry_busy_device)
@@ -609,6 +612,49 @@ class LVMShareDriverTestCase(test.TestCase):
         os_routines.umount.assert_has_calls([
             mock.call(mount_path)] * num_of_times_umount_is_called)
         os_routines.rmdir.assert_called_once_with(mount_path)
+        # Stale NFS client state is expired once, up front, on the delete
+        # path; the retry loop still covers any residual busy device.
+        if retry_busy_device:
+            mock_expire.assert_called_once_with(self.share)
+        else:
+            mock_expire.assert_not_called()
+
+    def test__expire_nfs_clients(self):
+        self.mock_object(self._driver, '_get_local_path',
+                         mock.Mock(return_value='/dev/mapper/fake-dev'))
+        self._os.stat.return_value = mock.Mock(st_rdev=64769)
+        self._os.major.return_value = 253
+        self._os.minor.return_value = 1
+        self.mock_object(os_routines, 'expire_nfs_clients_holding_dev',
+                         mock.Mock(return_value=['9', '11']))
+
+        self._driver._expire_nfs_clients(self.share)
+
+        os_routines.expire_nfs_clients_holding_dev.assert_called_once_with(
+            253, 1, self._driver.configuration.lvm_nfsd_clients_path)
+
+    def test__expire_nfs_clients_stat_fails(self):
+        self.mock_object(self._driver, '_get_local_path',
+                         mock.Mock(return_value='/dev/mapper/fake-dev'))
+        self._os.stat.side_effect = OSError('no such device')
+        self.mock_object(os_routines, 'expire_nfs_clients_holding_dev')
+
+        self._driver._expire_nfs_clients(self.share)
+
+        os_routines.expire_nfs_clients_holding_dev.assert_not_called()
+
+    def test__expire_nfs_clients_swallows_privsep_errors(self):
+        self.mock_object(self._driver, '_get_local_path',
+                         mock.Mock(return_value='/dev/mapper/fake-dev'))
+        self._os.stat.return_value = mock.Mock(st_rdev=64769)
+        self._os.major.return_value = 253
+        self._os.minor.return_value = 1
+        self.mock_object(
+            os_routines, 'expire_nfs_clients_holding_dev',
+            mock.Mock(side_effect=exception.ProcessExecutionError))
+
+        # Best-effort: must not propagate.
+        self._driver._expire_nfs_clients(self.share)
 
     def test_extend_share(self):
         local_path = self._driver._get_local_path(self.share)
@@ -718,7 +764,8 @@ class LVMShareDriverTestCase(test.TestCase):
                                         [], [], self.share_server)
         self.assertEqual(4, mock_update_access.call_count)
         mock__unmount_device.assert_has_calls(
-            [mock.call(self.snapshot), mock.call(self.snapshot['share'])])
+            [mock.call(self.snapshot, retry_busy_device=True),
+             mock.call(self.snapshot['share'], retry_busy_device=True)])
         mock_lvconvert.assert_called_once_with(
             CONF.lvm_share_volume_group, self.snapshot['name'])
         mock_create_snapshot.assert_called_once_with(

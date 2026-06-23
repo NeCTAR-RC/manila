@@ -62,6 +62,13 @@ share_opts = [
                     'NFS=manila.share.drivers.helpers.NFSHelper',
                 ],
                 help='Specify list of share export helpers.'),
+    cfg.StrOpt('lvm_nfsd_clients_path',
+               default='/proc/fs/nfsd/clients',
+               help='Path to the kernel NFS server client list used to expire '
+                    'stale NFSv4 client state that would otherwise keep a '
+                    'share busy at deletion time. When manila-share runs in a '
+                    'container, bind-mount the host /proc/fs/nfsd into the '
+                    'container and point this option at it.'),
 ]
 
 CONF = cfg.CONF
@@ -315,6 +322,16 @@ class LVMShareDriver(LVMMixin, driver.ShareDriver):
         mount_path = self._get_mount_path(share_or_snapshot)
         if os.path.exists(mount_path):
 
+            if retry_busy_device:
+                # Proactively expire any stale NFSv4 client state (e.g. from a
+                # deleted VM that mounted the share but never unmounted) that
+                # would otherwise keep the filesystem busy. The export is
+                # already gone by this point, so any client still holding the
+                # share has already lost access; expiring up front lets the
+                # unmount succeed on the first attempt instead of failing and
+                # waiting for the retry backoff.
+                self._expire_nfs_clients(share_or_snapshot)
+
             retries = 10 if retry_busy_device else 1
 
             @utils.retry(retry_param=exception.ShareBusyException,
@@ -341,6 +358,38 @@ class LVMShareDriver(LVMMixin, driver.ShareDriver):
             except exception.ProcessExecutionError:
                 msg = _("Failed to remove the directory.")
                 raise exception.ShareBackendException(msg=msg)
+
+    def _expire_nfs_clients(self, share_or_snapshot):
+        """Expire NFSv4 client state pinning the share's filesystem.
+
+        A client that mounted the share over NFSv4 but never unmounted (e.g. a
+        deleted VM) leaves open state on the kernel NFS server, which keeps the
+        share filesystem busy and prevents it from being unmounted. Forcibly
+        expire any such client so the unmount can proceed. Best-effort: any
+        failure (no NFS server, clients path not exposed, etc.) is logged and
+        ignored so the caller can fall back to retrying the unmount.
+        """
+        device_path = self._get_local_path(share_or_snapshot)
+        try:
+            rdev = os.stat(device_path).st_rdev
+        except OSError as exc:
+            LOG.debug("Could not stat %(dev)s to expire NFS clients: %(err)s",
+                      {'dev': device_path, 'err': exc})
+            return
+        try:
+            expired = privsep_os.expire_nfs_clients_holding_dev(
+                os.major(rdev), os.minor(rdev),
+                self.configuration.lvm_nfsd_clients_path)
+        except Exception as exc:
+            LOG.warning("Failed to expire NFS clients holding %(name)s: "
+                        "%(err)s",
+                        {'name': share_or_snapshot['name'], 'err': exc})
+            return
+        if expired:
+            LOG.warning("Expired stale NFS client(s) %(ids)s holding "
+                        "%(name)s to allow unmount.",
+                        {'ids': ', '.join(expired),
+                         'name': share_or_snapshot['name']})
 
     def ensure_shares(self, context, shares):
         updates = {}
@@ -463,10 +512,11 @@ class LVMShareDriver(LVMMixin, driver.ShareDriver):
         self._get_helper(share).update_access(self.share_server,
                                               share_export_location,
                                               [], [], [])
-        # Unmount the snapshot filesystem
-        self._unmount_device(snapshot)
-        # Unmount the share filesystem
-        self._unmount_device(share)
+        # Unmount the snapshot and share filesystems. Access rules have just
+        # been removed, so expire any stale NFSv4 client state that would
+        # otherwise keep them busy and retry on a busy device.
+        self._unmount_device(snapshot, retry_busy_device=True)
+        self._unmount_device(share, retry_busy_device=True)
         # Merge the snapshot LV back into the share, reverting it
         try:
             privsep_lvm.lvconvert(self.configuration.lvm_share_volume_group,
@@ -509,7 +559,8 @@ class LVMShareDriver(LVMMixin, driver.ShareDriver):
         return {'export_locations': exports}
 
     def delete_snapshot(self, context, snapshot, share_server=None):
-        self._unmount_device(snapshot, raise_if_missing=False)
+        self._unmount_device(snapshot, raise_if_missing=False,
+                             retry_busy_device=True)
 
         super(LVMShareDriver, self).delete_snapshot(context, snapshot,
                                                     share_server)
