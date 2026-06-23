@@ -457,6 +457,29 @@ class LVMShareDriverTestCase(test.TestCase):
         self._driver._deallocate_container.assert_called_once_with(
             self.share['name'])
 
+    def test_delete_share_removes_exports_before_unmount(self):
+        # The exports must be removed before the device is unmounted,
+        # otherwise the kernel NFS server keeps the mountpoint busy and the
+        # unmount fails with a 'target is busy' error.
+        manager = mock.Mock()
+        manager.attach_mock(
+            self.mock_object(self._driver, '_delete_share'), '_delete_share')
+        manager.attach_mock(
+            self.mock_object(self._driver, '_unmount_device'),
+            '_unmount_device')
+        manager.attach_mock(
+            self.mock_object(self._driver, '_deallocate_container'),
+            '_deallocate_container')
+
+        self._driver.delete_share(self._context, self.share, self.share_server)
+
+        manager.assert_has_calls([
+            mock.call._delete_share(self._context, self.share),
+            mock.call._unmount_device(self.share, raise_if_missing=False,
+                                      retry_busy_device=True),
+            mock.call._deallocate_container(self.share['name']),
+        ])
+
     def test_delete_share_process_execution_error(self):
         self.mock_object(
             self._helper_nfs,

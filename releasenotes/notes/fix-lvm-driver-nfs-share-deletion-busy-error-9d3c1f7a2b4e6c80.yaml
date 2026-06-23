@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Fixed a bug in the LVM share driver where deleting NFS shares could fail
+    with a 'target is busy' error. The NFS exports are now unexported via
+    ``exportfs -u`` before the share filesystem is unmounted, so that the
+    kernel NFS server no longer holds references to the mountpoint at unmount
+    time.

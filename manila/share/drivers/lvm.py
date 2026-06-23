@@ -300,9 +300,13 @@ class LVMShareDriver(LVMMixin, driver.ShareDriver):
         return location
 
     def delete_share(self, context, share, share_server=None):
+        # NOTE: Remove the exports before unmounting so that no NFS clients
+        # hold references to the mountpoint. Otherwise the unmount can fail
+        # with a 'target is busy' error because the kernel NFS server still
+        # has the export active. This mirrors the generic driver ordering.
+        self._delete_share(context, share)
         self._unmount_device(share, raise_if_missing=False,
                              retry_busy_device=True)
-        self._delete_share(context, share)
         self._deallocate_container(share['name'])
 
     def _unmount_device(self, share_or_snapshot, raise_if_missing=True,
